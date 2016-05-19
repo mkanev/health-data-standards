@@ -14,17 +14,17 @@
 
   <packaging>jar</packaging>
 
+  <properties>
+    <jruby.plugins.version>1.1.5</jruby.plugins.version>
+    <gem.path>${project.build.directory}/rubygems</gem.path>
+  </properties>
+
   <repositories>
     <repository>
       <id>rubygems-release</id>
       <url>http://rubygems-proxy.torquebox.org/releases</url>
     </repository>
   </repositories>
-
-  <properties>
-    <jruby.plugins.version>1.1.5</jruby.plugins.version>
-    <gem.path>${project.build.directory}/rubygems</gem.path>
-  </properties>
 
   <build>
     <sourceDirectory>lib</sourceDirectory>
@@ -38,15 +38,6 @@
     </extensions>
     <plugins>
       <plugin>
-        <groupId>de.saumya.mojo</groupId>
-        <artifactId>gem-maven-plugin</artifactId>
-        <version>${jruby.plugins.version}</version>
-        <configuration>
-          <gemspec>health-data-standards.gemspec</gemspec>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <executions>
           <execution>
@@ -56,6 +47,34 @@
           <execution>
             <id>default-testCompile</id>
             <phase>none</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>de.saumya.mojo</groupId>
+        <artifactId>gem-maven-plugin</artifactId>
+        <version>${jruby.plugins.version}</version>
+        <configuration>
+          <gemspec>health-data-standards.gemspec</gemspec>
+          <includeGemsInResources>true</includeGemsInResources>
+          <includeDependencies>true</includeDependencies>
+          <rubySourceDirectory>${basedir}/lib</rubySourceDirectory>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>${basedir}/assemble/jar-deps-gems.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
